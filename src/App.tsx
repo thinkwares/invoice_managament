@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { Auth } from './components/Auth';
+import { LandingPage } from './components/LandingPage';
 import { CompanySettings } from './components/CompanySettings';
 import { InvoiceForm } from './components/InvoiceForm';
 import { InvoiceList } from './components/InvoiceList';
@@ -14,6 +15,7 @@ import { FileText, LogOut, Settings, Users, Languages } from 'lucide-react';
 const MainApp: React.FC = () => {
   const { user, signOut } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+  const [showLanding, setShowLanding] = useState(true);
   const [company, setCompany] = useState<Company | null>(null);
   const [showCompanySettings, setShowCompanySettings] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -22,6 +24,7 @@ const MainApp: React.FC = () => {
 
   useEffect(() => {
     if (user) {
+      setShowLanding(false);
       loadCompany();
     }
   }, [user]);
@@ -61,6 +64,10 @@ const MainApp: React.FC = () => {
     await signOut();
     setCompany(null);
   };
+
+  if (!user && showLanding) {
+    return <LandingPage onGetStarted={() => setShowLanding(false)} />;
+  }
 
   if (!user) {
     return <Auth />;
